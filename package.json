@@ -1,0 +1,19 @@
+{
+  "name": "repopulse",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Minimalist GitHub webhook signal worker for a personal portfolio.",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsgo --noEmit",
+    "test": "rm -rf .test-dist && tsgo -p tsconfig.test.json && node --test .test-dist/test/*.test.js",
+    "check": "npm run typecheck && npm run test && wrangler deploy --dry-run",
+    "dev": "wrangler dev"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260719.1",
+    "@types/node": "^22.10.2",
+    "@typescript/native-preview": "7.0.0-dev.20260707.2",
+    "wrangler": "^4.112.0"
+  }
+}
