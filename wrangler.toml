@@ -7,5 +7,5 @@ crons = ["15 6 * * *"]
 
 [[kv_namespaces]]
 binding = "REPULSE_STATE"
-id = "__REPULSE_STATE_NAMESPACE_ID__"
-preview_id = "__REPULSE_STATE_PREVIEW_NAMESPACE_ID__"
+id = "64f119ea8e2c4a9fb0aa70f8ba4602dc"
+preview_id = "64f119ea8e2c4a9fb0aa70f8ba4602dc"
