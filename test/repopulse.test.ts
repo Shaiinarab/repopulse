@@ -109,6 +109,30 @@ test("accepts a signed push, ignores its replay, and exposes sanitized public st
   assert.equal(body.privateRepositoryCount, 0);
 });
 
+test("accepts a signed form-encoded push delivery", async () => {
+  const env = testEnv();
+  const payload = JSON.stringify({
+    ref: "refs/heads/main",
+    commits: [{ id: "c" }],
+    repository: { full_name: "Shaiinarab/Log-Sentinel", private: false },
+  });
+  const formBody = `payload=${encodeURIComponent(payload)}`;
+  const request = new Request("https://repopulse.test/github", {
+    method: "POST",
+    body: formBody,
+    headers: {
+      "content-type": "application/x-www-form-urlencoded",
+      "x-github-event": "push",
+      "x-github-delivery": "delivery-form-001",
+      "x-hub-signature-256": await signature(env.WEBHOOK_SECRET, formBody),
+    },
+  });
+
+  const response = await workerHandler().fetch(request, env);
+  assert.equal(response.status, 202);
+  assert.deepEqual(await response.json(), { accepted: true, event: "push" });
+});
+
 test("does not disclose a private repository name in the public status response", async () => {
   const env = testEnv();
   const payload = JSON.stringify({

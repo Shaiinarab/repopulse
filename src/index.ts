@@ -20,6 +20,18 @@ function staleAfterDays(value: string | undefined): number {
   return Number.isFinite(parsed) && parsed >= 1 && parsed <= 3650 ? parsed : 30;
 }
 
+function parseWebhookPayload(rawBody: ArrayBuffer, contentType: string | null): unknown {
+  const body = decoder.decode(rawBody);
+  if (contentType?.toLowerCase().includes("application/x-www-form-urlencoded")) {
+    const payload = new URLSearchParams(body).get("payload");
+    if (!payload) {
+      throw new Error("missing_form_payload");
+    }
+    return JSON.parse(payload);
+  }
+  return JSON.parse(body);
+}
+
 function publicStatus(state: PulseState) {
   const publicRepositories = Object.values(state.repositories)
     .filter((snapshot) => snapshot.visibility !== "private")
@@ -62,7 +74,7 @@ async function handleGitHub(request: Request, env: Env): Promise<Response> {
 
   let payload: unknown;
   try {
-    payload = JSON.parse(decoder.decode(rawBody));
+    payload = parseWebhookPayload(rawBody, request.headers.get("content-type"));
   } catch {
     return json({ error: "invalid_json" }, 400);
   }
